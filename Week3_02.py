@@ -1,6 +1,70 @@
 '''
-This program will be training in Object-orienting programming.
-Part 2: Weather log:
+ This program will be training in Object-orienting programming.
+ Part 2: Weather log:
+
+The program displays a menu to the user:
+    1) Measure current Weather
+    2) Plot log
+    3) Clear log
+    4) Exit
+ and acts according to the chosen menu item.
+If chosen 1, the program reads the following data from the 
+ Raspberry Pi SenseHat sensor and displays it onscreen as a list:
+    Temperature: 17.4
+    Humidity:    31.4
+    Pressure:    1018.3
+    Timestamp:   1754539143765.0
+ The data is then stored in a local list variable.
+If chosen 2, the program prints out the logged data in raw format:
+    [Indx] ([timestamp in milliseconds], [temperature], [humidity], [pressure])
+If chosen 3, the logged data is cleared.
+if chosen 4, the program exits.
+-----------------------------------------------------------------------------
+Classes created for this program:
+clear:
+    Allows for a simple screen clearing by using the screen() method.
+    usage example:
+        clear.screen()
+
+calibrated:
+    Uses the single method temperature(). Allows for simple calibration of
+    the temperature reading from the onboard SenseHat temperature sensor.
+    usage example:
+        print("calibrated.temperature(48.3)")
+
+weather:
+    Uses the single method getWeather(), reading the sensors, calling the
+    calibrated.temperature() method to get the true value of the ambient
+    temperature.
+    Prints out the received data in a short list.
+
+log:
+    Defines two local variables:
+    self.countSamples - integer, that count the amount of samples registered
+    self.samples      - list of the values of sensors read by the 
+                        weather.getWeather() method
+    Holds the following methods:
+        add()
+        Calls the weather.getWeather() method and appends the received data
+        to the local samples variable.
+        increments the countSamples variable by 1 each time it's called.
+
+        clear()
+        clears the data from both local variables.
+
+        plot()
+        Uses the matplotlib library to plot all the currently logged
+        temperature values on a plot.
+        Note: this only works if the user is connected to the Raspberry Pi
+        via a remote session and sees the Linux GUI. Otherwise the plot is
+        not shown.
+        After plotting the data, this method also prints out the "raw" data
+        and waits for user to press Enter.
+
+weatherApp:
+
+
+
 '''
 class clear():
 
@@ -10,12 +74,24 @@ class clear():
 
 class calibrated:
     def temperature(temp):
+        '''
+        Receives a value from the calling function, that should be the reading
+        of the SenseHat onboard temperature sensor.
+        Reads the CPU/Board temperature of the Pi.
+        Calculates the "true" value of ambient temperature.
+        Returns the resulting value to the calling function.
+
+        Note: The value of the Correction Factor was chosen forcebly after a
+        few local tests and may need to change according to Pi's environment
+        and the temperature of the system (dynamic correctlion)
+        '''
         import os
+        print("CPU")
         cpu_temp = os.popen("vcgencmd measure_temp").readline()
-        print(cpu_temp)
+        # print(cpu_temp)
         cpu_temp = float(cpu_temp.replace("temp=", "").replace("'C\n", ""))
-        correction_factor = 0.75  # Примерное значение
-        return(temp - ((cpu_temp - temp) / correction_factor))
+        correction_factor = 0.75                               # Correction factor chosen iteratively.
+        return(temp - ((cpu_temp - temp) / correction_factor)) # Returns the "fixed" temperature value, accounting for the board temperature.
 
 class weather:
     def getWeather(self):
@@ -57,16 +133,20 @@ class log:
         input("Log Cleared.\r\nPress Enter to continue.")
 
     def plot(self):
-        # temperatures = [sample[1] for sample in self.samples]
-        # import matplotlib.pyplot as plt
-        # fig = plt.figure()
-        # ax = fig.subplots()
-        # ax.plot([range(self.countSamples-1)],temperatures)
+        temperatures = [sample[1] for sample in self.samples]
+        import matplotlib.pyplot as plt
+        fig = plt.figure()
+        ax = fig.subplots()
+        print("The plot will only be seen in the RDP session to the Pi.")
+        ax.plot(list(range(0,(self.countSamples))),temperatures)
+        plt.show()
+        plt.close()
+
         clear.screen()
         # print("Printing current list of sensor reading:")
-
         for smp, sample in enumerate(self.samples):
             print(f"{smp+1} {sample}")
+        
         input("Log printed!\r\nPress Enter to continue.")
 
 class weatherApp:
