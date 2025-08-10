@@ -174,7 +174,7 @@ HTML_TEMPLATE = """
         tr.highlight-red {
             background-color: lightcoral;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 1280px) {
             .container {
                 flex-direction: column;
             }
