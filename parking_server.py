@@ -35,6 +35,15 @@ max_duration = {
 }
 
 # ------------------------------------------------------------------------------
+# Debugging the Websocket connection:
+# ------------------------------------------------------------------------------
+
+@socketio.on('connect')
+def handle_connect():
+    print("Client connected through WebSocket")
+
+
+# ------------------------------------------------------------------------------
 # This part lets us show pictures from the 'static/images' folder.
 # If someone asks for '/static/images/car.jpg', we find and send that file.
 # ------------------------------------------------------------------------------
@@ -137,7 +146,10 @@ HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parking Monitor</title>
+
     <style>
         /* This is the style for the webpage */
         body {
@@ -183,13 +195,27 @@ HTML_TEMPLATE = """
             }
         }
     </style>
+
+    <!-- Correct Socket.IO script loading -->
     https://cdn.socket.io/4.5.4/socket.io.min.js
+
+    <!-- JavaScript logic for WebSocket and auto-refresh -->
     <script>
-        // This connects to the server using WebSocket
-        const socket = io();
-        // When the server says "update", reload the page
-        socket.on('update', () => {
-            location.reload();
+        document.addEventListener("DOMContentLoaded", () => {
+            // Connect to the server via WebSocket
+            const socket = io();
+
+            // Refresh the page when 'update' event is received
+            socket.on('update', () => {
+                console.log("Received update event from server");
+                location.reload();
+            });
+
+            // Refresh the page every 5 minutes
+            setInterval(() => {
+                console.log("Refreshing page due to 5-minute interval");
+                location.reload();
+            }, 300000); // 300000 ms = 5 minutes
         });
     </script>
 </head>
@@ -234,4 +260,4 @@ if __name__ == '__main__':
     # Make sure the images folder exists, or create it
     os.makedirs('./static/images', exist_ok=True)
     # Start the server so people can visit the webpage
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
