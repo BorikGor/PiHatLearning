@@ -3,7 +3,7 @@ from sense_hat import SenseHat
 
 sense = SenseHat()
 
-sense.set_rotation(90)
+sense.set_rotation(180)
 
 # Setup the main color values:
 W = [255,255,255]             # White
@@ -80,8 +80,8 @@ for TestColor in colors:
 
 print(sense.color.gain)
 sense.color.gain = 16
-print("Gamma settings:")
-print(sense.gamma)
+# print("Gamma settings:")
+# print(sense.gamma)
 
 while True:
     time.sleep(2 * sense.colour.integration_time)
@@ -100,5 +100,5 @@ while True:
     tmp_txt = str(temperature_s)
     # sense.show_message(f"Humidity: " + hum_txt + "% ",text_colour=p)
     # sense.show_message(f"Temp= " + tmp_txt + "C ",text_colour=s)
-    sense.show_message(f"{temperature_s}/{temperature_h}/{temperature_p}")
+    sense.show_message(f"{temperature_s}")
     #time.sleep(2)
