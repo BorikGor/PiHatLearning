@@ -1,9 +1,6 @@
-import time
 from sense_hat import SenseHat
-
 sense = SenseHat()
-
-sense.set_rotation(90)
+sense.set_rotation(180)
 
 # Setup the main color values:
 W = [255,255,255]             # White
@@ -22,7 +19,5 @@ b = [255 - ind for ind in o]  # Light Blue
 N = [255 - ind for ind in g]  # Pink
 s = [255 - ind for ind in p]  # Salad Green
 
-L = R
-
-while True:
-    sense.show_message(f"thanks/thank you! ",text_colour=N)
+sense.show_message("Hello world", text_colour=B, back_colour=s, scroll_speed=0.1)
+sense.clear()

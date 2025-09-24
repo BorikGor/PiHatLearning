@@ -5,7 +5,7 @@ sense = SenseHat()
 sense.set_rotation(90)
 
 
-with open('tower.conf', 'r') as file:
+with open('4.2_tower.conf', 'r') as file:
     lines = file.readlines()
     for line in lines:
         times = int(line[0])
